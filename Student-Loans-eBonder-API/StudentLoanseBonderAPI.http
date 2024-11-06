@@ -1,0 +1,6 @@
+@StudentLoanseBonderAPIHostAddress = http://localhost:5043
+
+GET {{StudentLoanseBonderAPIHostAddress}}/weatherforecast/
+Accept: application/json
+
+###

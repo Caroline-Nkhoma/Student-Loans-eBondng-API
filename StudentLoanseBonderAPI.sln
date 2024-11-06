@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Student-Loans-eBonder-API", "Student-Loans-eBonder-API\Student-Loans-eBonder-API.csproj", "{00C48FF3-6138-4480-8628-6D8FE406616B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StudentLoanseBonderAPI", "Student-Loans-eBonder-API\StudentLoanseBonderAPI.csproj", "{00C48FF3-6138-4480-8628-6D8FE406616B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
