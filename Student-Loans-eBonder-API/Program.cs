@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 namespace StudentLoanseBonderAPI;
 
@@ -13,7 +14,10 @@ public class Program
 		builder.Services.AddControllers();
 		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 		builder.Services.AddEndpointsApiExplorer();
-		builder.Services.AddSwaggerGen();
+		builder.Services.AddSwaggerGen(c =>
+		{
+			c.SwaggerDoc("v0", new OpenApiInfo { Title = "StudentLoanseBonderAPI", Version = "v0" });
+		});
 
 		builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("StudentLoanseBonderAPIDatabase")).UseSnakeCaseNamingConvention());
 
@@ -23,7 +27,7 @@ public class Program
 		if (app.Environment.IsDevelopment())
 		{
 			app.UseSwagger();
-			app.UseSwaggerUI();
+			app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v0/swagger.json", "StudentLoanseBonderAPI"));
 		}
 
 		app.UseHttpsRedirection();
