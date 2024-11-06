@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>Student_Loans_eBonder_API</RootNamespace>
+    <RootNamespace>StudentLoanseBonderAPI</RootNamespace>
     <UserSecretsId>e3238d25-7c33-4465-b393-6dcf186afa2e</UserSecretsId>
   </PropertyGroup>
 
