@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using StudentLoanseBonderAPI.Entities;
+using StudentLoanseBonderAPI.Services;
 using System.Text;
 
 namespace StudentLoanseBonderAPI;
@@ -17,6 +18,7 @@ public class Program
 		// Add services to the container.
 
 		builder.Services.AddControllers();
+		builder.Services.AddScoped<AccountService>();
 
 		builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 		{
