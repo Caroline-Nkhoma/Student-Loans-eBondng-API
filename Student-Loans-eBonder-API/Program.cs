@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 
 namespace StudentLoanseBonderAPI;
 
@@ -13,6 +16,21 @@ public class Program
 		// Add services to the container.
 
 		builder.Services.AddControllers();
+
+		builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+		{
+			options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+			{
+				ValidateIssuer = false,
+				ValidateAudience = false,
+				ValidateLifetime = true,
+				ValidateIssuerSigningKey = true,
+				IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTKey"])),
+				ClockSkew = TimeSpan.Zero,
+			};
+			options.MapInboundClaims = false;
+		});
+
 		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 		builder.Services.AddEndpointsApiExplorer();
 		builder.Services.AddSwaggerGen(c =>
@@ -34,6 +52,8 @@ public class Program
 		}
 
 		app.UseHttpsRedirection();
+
+		app.UseAuthentication();
 
 		app.UseAuthorization();
 
