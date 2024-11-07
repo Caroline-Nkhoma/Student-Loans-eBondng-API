@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using StudentLoanseBonderAPI.Entities;
 using System.Text;
 
 namespace StudentLoanseBonderAPI;
@@ -38,7 +39,7 @@ public class Program
 			c.SwaggerDoc("v0", new OpenApiInfo { Title = "StudentLoanseBonderAPI", Version = "v0" });
 		});
 
-		builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+		builder.Services.AddIdentity<User, Role>().AddRoles<Role>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
 		builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("StudentLoanseBonderAPIDatabase")).UseSnakeCaseNamingConvention());
 
