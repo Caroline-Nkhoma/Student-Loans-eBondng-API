@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using StudentLoanseBonderAPI.DTOs;
-using StudentLoanseBonderAPI.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -11,12 +10,12 @@ namespace StudentLoanseBonderAPI.Services;
 public class AccountService
 {
 	private readonly ILogger<AccountService> _logger;
-	private readonly UserManager<User> _userManager;
-	private readonly SignInManager<User> _signInManager;
+	private readonly UserManager<IdentityUser> _userManager;
+	private readonly SignInManager<IdentityUser> _signInManager;
 	private readonly IConfiguration _configuration;
 	private readonly ApplicationDbContext _dbContext;
 
-	public AccountService(ILogger<AccountService> logger, UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration, ApplicationDbContext dbContext)
+	public AccountService(ILogger<AccountService> logger, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IConfiguration configuration, ApplicationDbContext dbContext)
 	{
 		_logger = logger;
 		_userManager = userManager;
@@ -29,13 +28,14 @@ public class AccountService
 	{
 		_logger.LogInformation($"Attempt to register {userCredentials.Email}");
 
-		var user = new User
+		var user = new IdentityUser
 		{
 			UserName = userCredentials.Email,
 			Email = userCredentials.Email,
 		};
 
-		return await _userManager.CreateAsync(user, userCredentials.Password);
+		var result = await _userManager.CreateAsync(user, userCredentials.Password);
+		return result;
 	}
 	public async Task<SignInResult> Login(UserCredentials userCredentials)
 	{
