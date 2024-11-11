@@ -44,6 +44,15 @@ public class Program
 
 		builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("StudentLoanseBonderAPIDatabase")).UseSnakeCaseNamingConvention());
 
+		builder.Services.AddCors(options =>
+		{
+			var frontendURL = builder.Configuration.GetValue<string>("FrontendURL")!;
+			options.AddDefaultPolicy(builder =>
+			{
+				builder.WithOrigins(frontendURL).AllowAnyMethod().AllowAnyHeader();
+			});
+		});
+
 		var app = builder.Build();
 
 		// Configure the HTTP request pipeline.
@@ -54,6 +63,10 @@ public class Program
 		}
 
 		app.UseHttpsRedirection();
+
+		app.UseRouting();
+
+		app.UseCors();
 
 		app.UseAuthentication();
 
