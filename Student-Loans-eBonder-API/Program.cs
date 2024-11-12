@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using StudentLoanseBonderAPI.Services;
+using Supabase;
 using System.Text;
 
 namespace StudentLoanseBonderAPI;
@@ -17,8 +18,26 @@ public class Program
 		// Add services to the container.
 
 		builder.Services.AddHttpContextAccessor();
-		builder.Services.AddControllers();
+		builder.Services.AddAutoMapper(typeof(Program));
+
+		builder.Services.AddScoped<Supabase.Client>(_ =>
+			new Supabase.Client(
+				supabaseUrl: builder.Configuration.GetValue<string>("SupabaseURL"),
+				supabaseKey: builder.Configuration.GetValue<string>("SupabaseKey"),
+				new SupabaseOptions
+				{
+					AutoConnectRealtime = true,
+					AutoRefreshToken = true,
+				}
+			)
+		);
+
+		builder.Services.AddScoped<IFileStorageService, SupabaseStorageService>();
+
 		builder.Services.AddScoped<AccountService>();
+		builder.Services.AddScoped<UserService>();
+		builder.Services.AddScoped<StudentService>();
+		builder.Services.AddControllers();
 
 		builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 		{
