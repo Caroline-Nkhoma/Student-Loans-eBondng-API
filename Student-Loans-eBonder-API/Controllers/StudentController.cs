@@ -52,7 +52,7 @@ public class StudentController : ControllerBase
 	}
 
 	[HttpPost]
-	public async Task<ActionResult> Post([FromBody] StudentCreateDTO studentCreateDTO)
+	public async Task<ActionResult> Post([FromForm] StudentCreateDTO studentCreateDTO)
 	{
 		var created = await _studentService.Create(studentCreateDTO);
 		
@@ -67,7 +67,7 @@ public class StudentController : ControllerBase
 	}
 
 	[HttpPatch("{id}")]
-	public async Task<ActionResult> Patch(int id, [FromBody] StudentUpdateDTO studentUpdateDTO)
+	public async Task<ActionResult> Patch(int id, [FromForm] StudentUpdateDTO studentUpdateDTO)
 	{
 		var updated = await _studentService.Update(id, studentUpdateDTO);
 
