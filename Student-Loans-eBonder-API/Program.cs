@@ -16,6 +16,7 @@ public class Program
 
 		// Add services to the container.
 
+		builder.Services.AddHttpContextAccessor();
 		builder.Services.AddControllers();
 		builder.Services.AddScoped<AccountService>();
 
@@ -32,6 +33,8 @@ public class Program
 			};
 			options.MapInboundClaims = false;
 		});
+
+		builder.Services.AddAuthorization();
 
 		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 		builder.Services.AddEndpointsApiExplorer();
