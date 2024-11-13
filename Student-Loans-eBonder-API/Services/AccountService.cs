@@ -24,6 +24,14 @@ public class AccountService
 		_dbContext = dbContext;
 	}
 
+	public async Task<IdentityUser?> FindOne(string email)
+	{
+		_logger.LogInformation($"Finding account with email {email}");
+		var user = await _userManager.FindByEmailAsync(email);
+
+		return user;
+	}
+
 	public async Task<IdentityResult> Register(UserCredentials userCredentials)
 	{
 		_logger.LogInformation($"Attempt to register {userCredentials.Email}");
