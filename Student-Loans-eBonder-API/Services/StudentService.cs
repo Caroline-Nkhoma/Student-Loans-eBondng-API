@@ -12,14 +12,16 @@ public class StudentService
 	private readonly ApplicationDbContext _dbContext;
 	private readonly IMapper _mapper;
 	private readonly IFileStorageService _fileStorageService;
+	private readonly AccountService _accountService;
 	private readonly string _containerName = "student-documents";
 
-	public StudentService(ILogger<StudentService> logger, ApplicationDbContext dbContext, IMapper mapper, IFileStorageService fileStorageService)
+	public StudentService(ILogger<StudentService> logger, ApplicationDbContext dbContext, IMapper mapper, IFileStorageService fileStorageService, AccountService accountService)
 	{
 		_logger = logger;
 		_dbContext = dbContext;
 		_mapper = mapper;
 		_fileStorageService = fileStorageService;
+		_accountService = accountService;
 	}
 
 	public async Task<StudentReadDTO?> FindOne(int id)
@@ -34,6 +36,30 @@ public class StudentService
 		}
 
 		_logger.LogInformation($"Found student with id {id}");
+		_logger.LogDebug($"Converting Student into StudentReadDTO");
+		return _mapper.Map<StudentReadDTO>(student);
+	}
+
+	public async Task<StudentReadDTO?> FindOne(string email)
+	{
+		_logger.LogInformation($"Finding student with email {email}");
+		var account = await _accountService.FindOne(email);
+
+		if (account == null)
+		{
+			_logger.LogInformation($"Could not find student with email {email}");
+			return null;
+		}
+
+		var student = await _dbContext.Students.FirstOrDefaultAsync(x => x.AccountId == account.Id);
+
+		if (student == null)
+		{
+			_logger.LogInformation($"Could not find student with email {email}");
+			return null;
+		}
+
+		_logger.LogInformation($"Found student with email {email}");
 		_logger.LogDebug($"Converting Student into StudentReadDTO");
 		return _mapper.Map<StudentReadDTO>(student);
 	}

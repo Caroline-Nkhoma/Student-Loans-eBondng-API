@@ -12,14 +12,16 @@ public class UserService
 	private readonly ApplicationDbContext _dbContext;
 	private readonly IMapper _mapper;
 	private readonly IFileStorageService _fileStorageService;
+	private readonly AccountService _accountService;
 	private readonly string _containerName = "user-documents";
 
-	public UserService(ILogger<UserService> logger, ApplicationDbContext dbContext, IMapper mapper, IFileStorageService fileStorageService)
+	public UserService(ILogger<UserService> logger, ApplicationDbContext dbContext, IMapper mapper, IFileStorageService fileStorageService, AccountService accountService)
 	{
 		_logger = logger;
 		_dbContext = dbContext;
 		_mapper = mapper;
 		_fileStorageService = fileStorageService;
+		_accountService = accountService;
 	}
 
 	public async Task<UserReadDTO?> FindOne(int id)
@@ -34,6 +36,30 @@ public class UserService
 		}
 
 		_logger.LogInformation($"Found user with id {id}");
+		_logger.LogDebug($"Converting User into UserReadDTO");
+		return _mapper.Map<UserReadDTO>(user);
+	}
+
+	public async Task<UserReadDTO?> FindOne(string email)
+	{
+		_logger.LogInformation($"Finding user with email {email}");
+		var account = await _accountService.FindOne(email);
+
+		if (account == null)
+		{
+			_logger.LogInformation($"Could not find user with email {email}");
+			return null;
+		}
+
+		var user = await _dbContext.AccountUsers.FirstOrDefaultAsync(x => x.AccountId == account.Id);
+
+		if (user == null)
+		{
+			_logger.LogInformation($"Could not find user with email {email}");
+			return null;
+		}
+
+		_logger.LogInformation($"Found user with email {email}");
 		_logger.LogDebug($"Converting User into UserReadDTO");
 		return _mapper.Map<UserReadDTO>(user);
 	}
