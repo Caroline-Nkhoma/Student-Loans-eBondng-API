@@ -17,9 +17,7 @@ public class Program
 
 		// Add services to the container.
 
-		builder.Services.AddHttpContextAccessor();
 		builder.Services.AddAutoMapper(typeof(Program));
-
 		builder.Services.AddScoped<Supabase.Client>(_ =>
 			new Supabase.Client(
 				supabaseUrl: builder.Configuration.GetValue<string>("SupabaseURL"),
@@ -31,12 +29,11 @@ public class Program
 				}
 			)
 		);
-
 		builder.Services.AddScoped<IFileStorageService, SupabaseStorageService>();
-
 		builder.Services.AddScoped<AccountService>();
 		builder.Services.AddScoped<UserService>();
 		builder.Services.AddScoped<StudentService>();
+		builder.Services.AddHttpContextAccessor();
 		builder.Services.AddControllers();
 
 		builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
