@@ -29,11 +29,15 @@ public class Program
 				}
 			)
 		);
+
 		builder.Services.AddScoped<IFileStorageService, SupabaseStorageService>();
+
+		builder.Services.AddHttpContextAccessor();
+
 		builder.Services.AddScoped<AccountService>();
 		builder.Services.AddScoped<UserService>();
 		builder.Services.AddScoped<StudentService>();
-		builder.Services.AddHttpContextAccessor();
+
 		builder.Services.AddControllers();
 
 		builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
