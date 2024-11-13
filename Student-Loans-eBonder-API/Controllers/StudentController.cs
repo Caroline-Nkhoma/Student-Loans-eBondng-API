@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StudentLoanseBonderAPI.DTOs;
 using StudentLoanseBonderAPI.Services;
 
@@ -6,6 +8,7 @@ namespace StudentLoanseBonderAPI.Controllers;
 
 [Route("api/students")]
 [ApiController]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class StudentController : ControllerBase
 {
 	private readonly ILogger<StudentController> _logger;
@@ -15,6 +18,22 @@ public class StudentController : ControllerBase
 	{
 		_logger = logger;
 		_studentService = studentService;
+	}
+
+	[HttpGet("self")]
+	public async Task<ActionResult<StudentReadDTO>> Get()
+	{
+		var email = HttpContext.User.Claims.First(x => x.Type == "email").Value;
+		var student = await _studentService.FindOne(email);
+
+		if (student == null)
+		{
+			return NotFound();
+		}
+		else
+		{
+			return student;
+		}
 	}
 
 	[HttpGet("{id}")]
