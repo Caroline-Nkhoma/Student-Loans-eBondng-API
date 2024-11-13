@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using StudentLoanseBonderAPI.Entities;
 using System.Diagnostics.CodeAnalysis;
 
 namespace StudentLoanseBonderAPI;
@@ -14,4 +15,7 @@ public class ApplicationDbContext : IdentityDbContext
 	{
 		base.OnModelCreating(builder);
 	}
+
+	public DbSet<Student> Students { get; set; }
+	public DbSet<User> AccountUsers { get; set; }
 }
