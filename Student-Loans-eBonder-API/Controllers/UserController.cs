@@ -52,7 +52,7 @@ public class UserController : ControllerBase
 	}
 
 	[HttpPost]
-	public async Task<ActionResult> Post([FromBody] UserCreateDTO userCreateDTO)
+	public async Task<ActionResult> Post([FromForm] UserCreateDTO userCreateDTO)
 	{
 		var created = await _userService.Create(userCreateDTO);
 
@@ -67,7 +67,7 @@ public class UserController : ControllerBase
 	}
 
 	[HttpPatch("{id}")]
-	public async Task<ActionResult> Patch(int id, [FromBody] UserUpdateDTO userUpdateDTO)
+	public async Task<ActionResult> Patch(int id, [FromForm] UserUpdateDTO userUpdateDTO)
 	{
 		var updated = await _userService.Update(id, userUpdateDTO);
 
