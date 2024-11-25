@@ -18,4 +18,5 @@ public class ApplicationDbContext : IdentityDbContext
 
 	public DbSet<Student> Students { get; set; }
 	public DbSet<User> AccountUsers { get; set; }
+    public object LoanAmounts { get; internal set; }
 }
