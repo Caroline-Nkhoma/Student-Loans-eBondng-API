@@ -6,7 +6,7 @@ using StudentLoanseBonderAPI.Services;
 
 namespace StudentLoanseBonderAPI.Controllers;
 
-[Route("api/users")]
+[Route("api/accounts/{accountId}/users")]
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class UserController : ControllerBase
@@ -20,11 +20,10 @@ public class UserController : ControllerBase
 		_userService = userService;
 	}
 
-	[HttpGet("self")]
-	public async Task<ActionResult<UserReadDTO>> Get()
+	[HttpGet]
+	public async Task<ActionResult<UserReadDTO>> Get([FromRoute] string accountId)
 	{
-		var email = HttpContext.User.Claims.First(x => x.Type == "email").Value;
-		var user = await _userService.FindOne(email);
+		var user = await _userService.FindOne(accountId);
 
 		if (user == null)
 		{
@@ -36,40 +35,25 @@ public class UserController : ControllerBase
 		}
 	}
 
-	[HttpGet("{id}")]
-	public async Task<ActionResult<UserReadDTO>> Get(int id)
+	[HttpPut]
+	public async Task<ActionResult> Put([FromRoute] string accountId, [FromForm] UserCreateDTO userCreateDTO)
 	{
-		var user = await _userService.FindOne(id);
+		var hasBeenPut = await _userService.CreateOrUpdate(accountId, userCreateDTO);
 
-		if (user == null)
+		if (hasBeenPut)
 		{
-			return NotFound();
+			return NoContent();
 		}
 		else
 		{
-			return user;
+			return BadRequest();
 		}
 	}
 
-	[HttpPost]
-	public async Task<ActionResult> Post([FromForm] UserCreateDTO userCreateDTO)
+	[HttpPatch]
+	public async Task<ActionResult> Patch([FromRoute] string accountId, [FromForm] UserUpdateDTO userUpdateDTO)
 	{
-		var created = await _userService.Create(userCreateDTO);
-
-		if (created)
-		{
-			return Created();
-		}
-		else
-		{
-			throw new NotImplementedException();
-		}
-	}
-
-	[HttpPatch("{id}")]
-	public async Task<ActionResult> Patch(int id, [FromForm] UserUpdateDTO userUpdateDTO)
-	{
-		var updated = await _userService.Update(id, userUpdateDTO);
+		var updated = await _userService.Update(accountId, userUpdateDTO);
 
 		if (updated)
 		{
@@ -81,10 +65,10 @@ public class UserController : ControllerBase
 		}
 	}
 
-	[HttpDelete("{id}")]
-	public async Task<ActionResult> Delete(int id)
+	[HttpDelete]
+	public async Task<ActionResult> Delete([FromRoute] string accountId)
 	{
-		var deleted = await _userService.Delete(id);
+		var deleted = await _userService.Delete(accountId);
 
 		if (deleted)
 		{

@@ -6,7 +6,7 @@ using StudentLoanseBonderAPI.Services;
 
 namespace StudentLoanseBonderAPI.Controllers;
 
-[Route("api/students")]
+[Route("api/accounts/{accountId}/students")]
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class StudentController : ControllerBase
@@ -20,11 +20,10 @@ public class StudentController : ControllerBase
 		_studentService = studentService;
 	}
 
-	[HttpGet("self")]
-	public async Task<ActionResult<StudentReadDTO>> Get()
+	[HttpGet]
+	public async Task<ActionResult<StudentReadDTO>> Get([FromRoute] string accountId)
 	{
-		var email = HttpContext.User.Claims.First(x => x.Type == "email").Value;
-		var student = await _studentService.FindOne(email);
+		var student = await _studentService.FindOne(accountId);
 
 		if (student == null)
 		{
@@ -36,40 +35,25 @@ public class StudentController : ControllerBase
 		}
 	}
 
-	[HttpGet("{id}")]
-	public async Task<ActionResult<StudentReadDTO>> Get(int id)
+	[HttpPut]
+	public async Task<ActionResult> Put([FromRoute] string accountId, [FromForm] StudentCreateDTO studentCreateDTO)
 	{
-		var student = await _studentService.FindOne(id);
-
-		if (student == null)
-		{
-			return NotFound();
-		}
-		else
-		{
-			return student;
-		}
-	}
-
-	[HttpPost]
-	public async Task<ActionResult> Post([FromForm] StudentCreateDTO studentCreateDTO)
-	{
-		var created = await _studentService.Create(studentCreateDTO);
+		var hasBeenPut = await _studentService.CreateOrUpdate(accountId, studentCreateDTO);
 		
-		if (created)
+		if (hasBeenPut)
 		{
-			return Created();
+			return NoContent();
 		}
 		else
 		{
-			throw new NotImplementedException();
+			return BadRequest();
 		}
 	}
 
-	[HttpPatch("{id}")]
-	public async Task<ActionResult> Patch(int id, [FromForm] StudentUpdateDTO studentUpdateDTO)
+	[HttpPatch]
+	public async Task<ActionResult> Patch([FromRoute] string accountId, [FromForm] StudentUpdateDTO studentUpdateDTO)
 	{
-		var updated = await _studentService.Update(id, studentUpdateDTO);
+		var updated = await _studentService.Update(accountId, studentUpdateDTO);
 
 		if (updated)
 		{
@@ -81,10 +65,10 @@ public class StudentController : ControllerBase
 		}
 	}
 
-	[HttpDelete("{id}")]
-	public async Task<ActionResult> Delete(int id)
+	[HttpDelete]
+	public async Task<ActionResult> Delete([FromRoute] string accountId)
 	{
-		var deleted = await _studentService.Delete(id);
+		var deleted = await _studentService.Delete(accountId);
 
 		if (deleted)
 		{
