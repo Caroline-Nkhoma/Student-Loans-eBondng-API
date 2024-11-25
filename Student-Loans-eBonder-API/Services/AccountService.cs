@@ -53,7 +53,7 @@ public class AccountService
 		return await _signInManager.PasswordSignInAsync(userCredentials.Email, userCredentials.Password, isPersistent: false, lockoutOnFailure: false);
 	}
 
-	internal AuthenticationResponse BuildToken(UserCredentials userCredentials)
+	internal async Task<AuthenticationResponse> BuildToken(UserCredentials userCredentials)
 	{
 		var claims = new List<Claim>()
 		{
@@ -67,8 +67,11 @@ public class AccountService
 
 		var token = new JwtSecurityToken(issuer: null, audience: null, claims: claims, expires: expiration, signingCredentials: creds);
 
+		var user = await FindOne(userCredentials.Email);
+
 		return new AuthenticationResponse
 		{
+			AccountId = user.Id,
 			Token = new JwtSecurityTokenHandler().WriteToken(token),
 			Expiration = expiration,
 		};

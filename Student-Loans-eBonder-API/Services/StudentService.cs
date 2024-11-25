@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StudentLoanseBonderAPI.DTOs;
 using StudentLoanseBonderAPI.Entities;
@@ -12,91 +11,98 @@ public class StudentService
 	private readonly ApplicationDbContext _dbContext;
 	private readonly IMapper _mapper;
 	private readonly IFileStorageService _fileStorageService;
-	private readonly AccountService _accountService;
 	private readonly string _containerName = "student-documents";
 
-	public StudentService(ILogger<StudentService> logger, ApplicationDbContext dbContext, IMapper mapper, IFileStorageService fileStorageService, AccountService accountService)
+	public StudentService(ILogger<StudentService> logger, ApplicationDbContext dbContext, IMapper mapper, IFileStorageService fileStorageService)
 	{
 		_logger = logger;
 		_dbContext = dbContext;
 		_mapper = mapper;
 		_fileStorageService = fileStorageService;
-		_accountService = accountService;
 	}
 
-	public async Task<StudentReadDTO?> FindOne(int id)
+	public async Task<StudentReadDTO?> FindOne(string accountId)
 	{
-		_logger.LogInformation($"Finding student with id {id}");
-		var student = await _dbContext.Students.FirstOrDefaultAsync(x => x.Id == id);
+		_logger.LogInformation($"Finding student belogning to account with id {accountId}");
+		var student = await _dbContext.Students.FirstOrDefaultAsync(x => x.AccountId == accountId);
 
 		if (student == null)
 		{
-			_logger.LogInformation($"Could not find student with id {id}");
+			_logger.LogInformation($"Could not find student belonging to account with id {accountId}");
 			return null;
 		}
 
-		_logger.LogInformation($"Found student with id {id}");
+		_logger.LogInformation($"Found student belonging to account with id {accountId}");
 		_logger.LogDebug($"Converting Student into StudentReadDTO");
 		return _mapper.Map<StudentReadDTO>(student);
 	}
 
-	public async Task<StudentReadDTO?> FindOne(string email)
+	public async Task<bool> CreateOrUpdate(string accountId, StudentCreateDTO studentCreateDTO)
 	{
-		_logger.LogInformation($"Finding student with email {email}");
-		var account = await _accountService.FindOne(email);
+		_logger.LogInformation("Checking if account already has a student");
+		var existingStudent = await _dbContext.Students.FirstOrDefaultAsync(x => x.AccountId == accountId);
 
-		if (account == null)
+		if (existingStudent == null)
 		{
-			_logger.LogInformation($"Could not find student with email {email}");
-			return null;
-		}
+			_logger.LogInformation($"Account does not have student");
 
-		var student = await _dbContext.Students.FirstOrDefaultAsync(x => x.AccountId == account.Id);
+			_logger.LogInformation("Creating new student");
+			_logger.LogDebug($"Converting StudentCreateDTO into Student");
+			var student = _mapper.Map<Student>(studentCreateDTO);
+
+			student.AccountId = accountId;
+
+			if (studentCreateDTO.NationalIdScan != null)
+			{
+				_logger.LogInformation("Saving uploaded national id scan");
+				student.NationalIdScan = await _fileStorageService.SaveFile(_containerName, studentCreateDTO.NationalIdScan);
+			}
+
+			if (studentCreateDTO.StudentIdScan != null)
+			{
+				_logger.LogInformation("Saving uploaded student id scan");
+				student.StudentIdScan = await _fileStorageService.SaveFile(_containerName, studentCreateDTO.StudentIdScan);
+			}
+
+			_logger.LogInformation("Adding new student");
+			_dbContext.Students.Add(student);
+			await _dbContext.SaveChangesAsync();
+
+			return true;
+		}
+		else
+		{
+			_logger.LogInformation("Updating existing student");
+			_logger.LogDebug($"Converting StudentCreateDTO into Student");
+			existingStudent = _mapper.Map(studentCreateDTO, existingStudent);
+
+			if (studentCreateDTO.NationalIdScan != null)
+			{
+				_logger.LogInformation("Saving uploaded national id scan");
+				existingStudent.NationalIdScan = await _fileStorageService.EditFile(_containerName, existingStudent.NationalIdScan, studentCreateDTO.NationalIdScan);
+			}
+
+			if (studentCreateDTO.StudentIdScan != null)
+			{
+				_logger.LogInformation("Saving uploaded student id scan");
+				existingStudent.StudentIdScan = await _fileStorageService.EditFile(_containerName, existingStudent.StudentIdScan, studentCreateDTO.StudentIdScan);
+			}
+
+			_logger.LogInformation($"Updating existing student belogning to account with id {accountId}");
+			await _dbContext.SaveChangesAsync();
+
+			return true;
+		}
+	}
+
+	public async Task<bool> Update(string accountId, StudentUpdateDTO studentUpdateDTO)
+	{
+		_logger.LogInformation($"Attempting to updating student belonging to account with id {accountId}");
+		var student = await _dbContext.Students.FirstOrDefaultAsync(x => x.AccountId == accountId);
 
 		if (student == null)
 		{
-			_logger.LogInformation($"Could not find student with email {email}");
-			return null;
-		}
-
-		_logger.LogInformation($"Found student with email {email}");
-		_logger.LogDebug($"Converting Student into StudentReadDTO");
-		return _mapper.Map<StudentReadDTO>(student);
-	}
-
-	public async Task<bool> Create(StudentCreateDTO studentCreateDTO)
-	{
-		_logger.LogInformation("Creating new student");
-		_logger.LogDebug($"Converting StudentCreateDTO into Student");
-		var student = _mapper.Map<Student>(studentCreateDTO);
-
-		if (studentCreateDTO.NationalIdScan != null)
-		{
-			_logger.LogInformation("Saving uploaded national id scan");
-			student.NationalIdScan = await _fileStorageService.SaveFile(_containerName, studentCreateDTO.NationalIdScan);
-		}
-
-		if (studentCreateDTO.StudentIdScan != null)
-		{
-			_logger.LogInformation("Saving uploaded student id scan");
-			student.StudentIdScan = await _fileStorageService.SaveFile(_containerName, studentCreateDTO.StudentIdScan);
-		}
-
-		_logger.LogInformation("Adding new student");
-		_dbContext.Students.Add(student);
-		await _dbContext.SaveChangesAsync();
-
-		return true;
-	}
-
-	public async Task<bool> Update(int id, StudentUpdateDTO studentUpdateDTO)
-	{
-		_logger.LogInformation($"Attempting to updating student with id {id}");
-		var student = await _dbContext.Students.FirstOrDefaultAsync(x => x.Id == id);
-
-		if (student == null)
-		{
-			_logger.LogInformation($"Could not find student with id {id}");
+			_logger.LogInformation($"Could not find student belonging to account with id {accountId}");
 			return false;
 		}
 
@@ -115,32 +121,31 @@ public class StudentService
 			student.StudentIdScan = await _fileStorageService.EditFile(_containerName, student.NationalIdScan, studentUpdateDTO.StudentIdScan);
 		}
 
-		_logger.LogInformation($"Updating existing student with id {id}");
+		_logger.LogInformation($"Updating existing student belonging to account with id {accountId}");
 		await _dbContext.SaveChangesAsync();
 
 		return true;
 	}
 
-	[HttpDelete("{id}")]
-	public async Task<bool> Delete(int id)
+	public async Task<bool> Delete(string accountId)
 	{
-		_logger.LogInformation($"Attempting to delete student with id {id}");
-		var student = await _dbContext.Students.FirstAsync(x => x.Id == id);
+		_logger.LogInformation($"Attempting to delete student belonging to account with id {accountId}");
+		var student = await _dbContext.Students.FirstOrDefaultAsync(x => x.AccountId == accountId);
 
 		if (student == null)
 		{
-			_logger.LogInformation($"Could not find student with id {id}");
+			_logger.LogInformation($"Could not find student belonging to account with id {accountId}");
 			return false;
 		}
 
-		_logger.LogInformation($"Deleting student with id {id}");
-		_dbContext.Remove(student);
+		_logger.LogInformation($"Deleting student belonging to account with id {accountId}");
+		_dbContext.Students.Remove(student);
 		await _dbContext.SaveChangesAsync();
 
 		_logger.LogInformation("Deleting uploaded national id scan");
-		await _fileStorageService.DeleteFile(student.NationalIdScan, _containerName);
+		await _fileStorageService.DeleteFile(containerName: _containerName, filePath: student.NationalIdScan);
 		_logger.LogInformation("Deleting uploaded student id scan");
-		await _fileStorageService.DeleteFile(student.StudentIdScan, _containerName);
+		await _fileStorageService.DeleteFile(containerName: _containerName, filePath: student.StudentIdScan);
 
 		return true;
 	}
