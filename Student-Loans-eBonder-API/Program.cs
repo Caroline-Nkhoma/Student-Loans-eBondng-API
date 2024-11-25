@@ -40,7 +40,7 @@ public class Program
 		builder.Services.AddScoped<StudentService>();
         builder.Services.AddScoped<BondingStatusService>();
 		builder.Services.AddScoped<BondingPeriodService>();
-
+		builder.Services.AddScoped<BondingFormService>();
 
 
 		builder.Services.AddControllers();
