@@ -7,6 +7,7 @@ using StudentLoanseBonderAPI.Services;
 using Supabase;
 using System.Text;
 
+
 namespace StudentLoanseBonderAPI;
 
 public class Program
@@ -37,6 +38,11 @@ public class Program
 		builder.Services.AddScoped<AccountService>();
 		builder.Services.AddScoped<UserService>();
 		builder.Services.AddScoped<StudentService>();
+        builder.Services.AddScoped<IBondingStatusService, BondingStatusService>();
+		builder.Services.AddScoped<IPeriodService, PeriodService>();
+		builder.Services.AddScoped<IBondingPeriodService, BondingPeriodService>();
+
+
 
 		builder.Services.AddControllers();
 
