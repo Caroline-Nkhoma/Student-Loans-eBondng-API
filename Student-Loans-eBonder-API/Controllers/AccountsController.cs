@@ -26,7 +26,7 @@ public class AccountController : ControllerBase
 		if (result.Succeeded)
 		{
 			_logger.LogInformation($"{userCredentials.Email}, has registered an account");
-			return _accountService.BuildToken(userCredentials);
+			return await _accountService.BuildToken(userCredentials);
 		}
 		else
 		{
@@ -43,7 +43,7 @@ public class AccountController : ControllerBase
 		if (result.Succeeded)
 		{
 			_logger.LogInformation($"{userCredentials.Email}, has logged into their account");
-			return _accountService.BuildToken(userCredentials);
+			return await _accountService.BuildToken(userCredentials);
 		}
 		else
 		{
