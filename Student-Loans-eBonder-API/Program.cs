@@ -37,6 +37,8 @@ public class Program
 		builder.Services.AddScoped<AccountService>();
 		builder.Services.AddScoped<UserService>();
 		builder.Services.AddScoped<StudentService>();
+		builder.Services.AddScoped<BondingFormService>();
+
 
 		builder.Services.AddControllers();
 
