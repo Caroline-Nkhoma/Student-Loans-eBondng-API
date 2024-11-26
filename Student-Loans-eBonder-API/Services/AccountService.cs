@@ -32,6 +32,21 @@ public class AccountService
 		return user;
 	}
 
+	public async Task<IdentityResult> AssignRole(string email, string roleName)
+	{
+		var user = await FindOne(email);
+
+		if (user == null)
+		{
+			_logger.LogInformation($"Could not find account with email {email}");
+			return IdentityResult.Failed([new IdentityError { Description = $"User {email} does not exist" }]);
+		}
+
+		_logger.LogInformation($"Attempt to add account with email {email} to {roleName} role");
+		var result = await _userManager.AddToRoleAsync(user, roleName);
+		return result;
+	}
+
 	public async Task<IdentityResult> Register(UserCredentials userCredentials)
 	{
 		_logger.LogInformation($"Attempt to register {userCredentials.Email}");
@@ -45,6 +60,7 @@ public class AccountService
 		var result = await _userManager.CreateAsync(user, userCredentials.Password);
 		return result;
 	}
+
 	public async Task<SignInResult> Login(UserCredentials userCredentials)
 	{
 		_logger.LogInformation($"Attempt to log into {userCredentials.Email}");
