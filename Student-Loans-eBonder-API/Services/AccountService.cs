@@ -42,9 +42,16 @@ public class AccountService
 
 	public async Task<IdentityResult> AssignRole(IdentityUser user, string roleName)
 	{
-		_logger.LogInformation($"Attempt to add account with id {user.Id} to {roleName} role");
+		_logger.LogInformation($"Attempting to add account with id {user.Id} to {roleName} role");
 		var result = await _userManager.AddToRoleAsync(user, roleName);
 		return result;
+	}
+
+	public async Task<List<string>> GetRoles(IdentityUser user)
+	{
+		_logger.LogInformation($"Fetching all the roles that the account with id {user.Id} belongs to");
+		var roles = await _userManager.GetRolesAsync(user);
+		return [.. roles];
 	}
 
 	public async Task<IdentityResult> Register(UserCredentials userCredentials)
