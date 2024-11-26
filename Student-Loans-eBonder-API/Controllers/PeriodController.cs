@@ -8,9 +8,9 @@ namespace StudentLoanseBonderAPI.Controllers
     [Route("/api/Period")]
     public class PeriodController : ControllerBase
     {
-        private readonly IPeriodService _periodService;
+        private readonly PeriodService _periodService;
 
-        public PeriodController(IPeriodService periodService)
+        public PeriodController(PeriodService periodService)
         {
             _periodService = periodService;
         }
