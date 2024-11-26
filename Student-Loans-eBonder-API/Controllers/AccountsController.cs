@@ -65,7 +65,7 @@ public class AccountController : ControllerBase
 		}
 	}
 
-	[HttpPost("{accountId}/assign-role")]
+	[HttpPost("{accountId}/roles")]
 	public async Task<ActionResult> AssignRole(string accountId, [FromBody] string role)
 	{
 		var user = await _accountService.FindOneById(accountId);
@@ -88,5 +88,19 @@ public class AccountController : ControllerBase
 			_logger.LogError($"Failed to assigned account with id {accountId} to User role");
 			return BadRequest(result.Errors);
 		}
+	}
+
+	[HttpGet("{accountId}/roles")]
+	public async Task<ActionResult<List<string>>> GetRoles(string accountId)
+	{
+		var user = await _accountService.FindOneById(accountId);
+
+		if (user == null)
+		{
+			_logger.LogInformation($"Could not find account with id {accountId}");
+			return NotFound();
+		}
+
+		return await _accountService.GetRoles(user);
 	}
 }
