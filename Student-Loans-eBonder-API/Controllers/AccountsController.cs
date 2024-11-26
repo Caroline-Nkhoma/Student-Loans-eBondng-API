@@ -26,6 +26,18 @@ public class AccountController : ControllerBase
 		if (result.Succeeded)
 		{
 			_logger.LogInformation($"{userCredentials.Email}, has registered an account");
+
+			var addToUserRoleResult = await _accountService.AssignRole(email: userCredentials.Email, roleName: "User");
+
+			if (addToUserRoleResult.Succeeded)
+			{
+				_logger.LogInformation($"Successfully added account with email {userCredentials.Email} to User role");
+			}
+			else
+			{
+				_logger.LogError($"Failed to add account with email {userCredentials.Email} to User role");
+			}
+
 			return await _accountService.BuildToken(userCredentials);
 		}
 		else
