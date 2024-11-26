@@ -18,9 +18,9 @@ public class BondingFormController : ControllerBase
 
     // GET: api/BondingForm/{id}
     [HttpGet("{id}")]
-    public async Task<ActionResult<BondingFormDTO>> GetBondingForm(string id)
+    public async Task<ActionResult<BondingFormReadDTO>> GetBondingForm(string id)
     {
-        var bondingForm = await _bondingFormService.GetBondingFormAsync(id);
+        var bondingForm = await _bondingFormService.FindOne(id);
 
         if (bondingForm == null)
         {
@@ -32,23 +32,18 @@ public class BondingFormController : ControllerBase
 
     // POST: api/BondingForm
     [HttpPost]
-    public async Task<ActionResult<BondingFormDTO>> PostBondingForm(BondingFormDTO bondingFormDTO)
+    public async Task<ActionResult> PostBondingForm(BondingFormCreateDTO bondingFormCreateDTO)
     {
-        var createdForm = await _bondingFormService.CreateBondingFormAsync(bondingFormDTO);
+        var createdForm = await _bondingFormService.Create(bondingFormCreateDTO);
 
-        return CreatedAtAction("GetBondingForm", new { id = createdForm.FormId }, createdForm);
+        return Created();
     }
 
     // PUT: api/BondingForm/{id}
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutBondingForm(string id, BondingFormDTO bondingFormDTO)
+    public async Task<IActionResult> PutBondingForm(string id, BondingFormUpdateDTO bondingFormUpdateDTO)
     {
-        if (id != bondingFormDTO.FormId)
-        {
-            return BadRequest();
-        }
-
-        var updatedForm = await _bondingFormService.UpdateBondingFormAsync(id, bondingFormDTO);
+        var updatedForm = await _bondingFormService.Update(id, bondingFormUpdateDTO);
 
         if (updatedForm == null)
         {
