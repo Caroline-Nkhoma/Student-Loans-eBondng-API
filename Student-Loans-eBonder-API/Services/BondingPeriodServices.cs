@@ -2,13 +2,7 @@ using StudentLoanseBonderAPI.DTOs;
 
 namespace StudentLoanseBonderAPI.Services
 {
-    public interface IBondingPeriodService
-    {
-        void SetBondingPeriod(BondingPeriodDto bondingPeriodDto);
-        BondingPeriodDto GetBondingPeriod();
-    }
-
-    public class BondingPeriodService : IBondingPeriodService
+    public class BondingPeriodService
     {
         private BondingPeriodDto _currentBondingPeriod;
 
