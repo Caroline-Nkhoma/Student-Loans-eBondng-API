@@ -14,7 +14,7 @@ namespace StudentLoanseBonderAPI;
 
 public class Program
 {
-	public static void Main(string[] args)
+	public static async Task Main(string[] args)
 	{
 		var builder = WebApplication.CreateBuilder(args);
 
@@ -108,6 +108,32 @@ public class Program
 
 
 		app.MapControllers();
+
+		using (var scope = app.Services.CreateScope())
+		{
+			var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+			logger.LogDebug("Getting Role Manager Service");
+			var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+			var roleNames = new []{ "User", "Student", "LoansBoardOfficial", "InstitutionAdmin", "SystemAdmin" };
+
+            foreach (var roleName in roleNames)
+            {
+				logger.LogInformation($"Checking if role {roleName} already exists");
+				var roleExists = await roleManager.RoleExistsAsync(roleName);
+
+                if (!roleExists)
+				{
+					logger.LogWarning($"Role {roleName} not found, creating it...");
+					await roleManager.CreateAsync(new IdentityRole(roleName));
+				}
+				else
+				{
+					logger.LogInformation($"Role {roleName} already exists");
+				}
+            }
+        }
 
 		app.Run();
 	}
