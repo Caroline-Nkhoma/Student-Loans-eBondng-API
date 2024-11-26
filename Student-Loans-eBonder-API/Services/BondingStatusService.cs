@@ -2,12 +2,7 @@ using StudentLoanseBonderAPI.DTOs;
 
 namespace StudentLoanseBonderAPI.Services
 {
-    public interface IBondingStatusService
-    {
-        BondingStatusDto GetBondingStatus();
-    }
-
-    public class BondingStatusService : IBondingStatusService
+    public class BondingStatusService
     {
         public BondingStatusDto GetBondingStatus()
         {
