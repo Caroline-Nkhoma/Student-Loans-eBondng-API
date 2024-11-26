@@ -42,7 +42,6 @@ public class Program
 		builder.Services.AddScoped<BondingPeriodService>();
 		builder.Services.AddScoped<BondingFormService>();
 
-
 		builder.Services.AddControllers();
 
 		builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
