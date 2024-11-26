@@ -8,9 +8,9 @@ namespace StudentLoanseBonderAPI.Controllers
     [Route("/api/BondingStatus")]
     public class BondingStatusController : ControllerBase
     {
-        private readonly IBondingStatusService _bondingStatusService;
+        private readonly BondingStatusService _bondingStatusService;
 
-        public BondingStatusController(IBondingStatusService bondingStatusService)
+        public BondingStatusController(BondingStatusService bondingStatusService)
         {
             _bondingStatusService = bondingStatusService;
         }
