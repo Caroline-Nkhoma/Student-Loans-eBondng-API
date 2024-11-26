@@ -14,10 +14,6 @@ public class Guardian
 	public string FirstName {get; set;} = string.Empty;
 	public string Surname {get; set;} = string.Empty;
 	public List<string> OtherNames {get; set;} = [];
-	public string FullName
-	{
-		get => $"{FirstName} {string.Join(' ', [.. OtherNames])} {Surname}";
-	}
 	public string PostalAddress {get; set;} = string.Empty;
 	public string PhysicalAddress {get; set;} = string.Empty;
 	public string HomeVillage {get; set;} = string.Empty;
