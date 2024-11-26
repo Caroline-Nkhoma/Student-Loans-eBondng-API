@@ -38,9 +38,8 @@ public class Program
 		builder.Services.AddScoped<AccountService>();
 		builder.Services.AddScoped<UserService>();
 		builder.Services.AddScoped<StudentService>();
-        builder.Services.AddScoped<IBondingStatusService, BondingStatusService>();
-		builder.Services.AddScoped<IPeriodService, PeriodService>();
-		builder.Services.AddScoped<IBondingPeriodService, BondingPeriodService>();
+        builder.Services.AddScoped<BondingStatusService>();
+		builder.Services.AddScoped<BondingPeriodService>();
 
 
 
