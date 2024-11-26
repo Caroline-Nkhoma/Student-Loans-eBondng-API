@@ -2,12 +2,7 @@ using StudentLoanseBonderAPI.DTOs;
 
 namespace StudentLoanseBonderAPI.Services
 {
-    public interface IPeriodService
-    {
-        PeriodDto GetPeriod();
-    }
-
-    public class PeriodService : IPeriodService
+    public class PeriodService
     {
         private readonly PeriodDto _period = new() { StartDate = "2022-01-01", EndDate = "2022-12-31" };
 
