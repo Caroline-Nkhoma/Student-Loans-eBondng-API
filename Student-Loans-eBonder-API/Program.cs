@@ -86,7 +86,7 @@ public class Program
 			var frontendURL = builder.Configuration.GetValue<string>("FrontendURL")!;
 			options.AddDefaultPolicy(builder =>
 			{
-				builder.WithOrigins(frontendURL).AllowAnyMethod().AllowAnyHeader();
+				builder.WithOrigins(frontendURL).AllowAnyMethod().AllowAnyHeader().WithExposedHeaders(["total_amount_of_records"]); ;
 			});
 		});
 
