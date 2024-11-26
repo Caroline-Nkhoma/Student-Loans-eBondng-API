@@ -1,36 +1,57 @@
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using StudentLoanseBonderAPI.DTOs;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using StudentLoanseBonderAPI.Entities;
 
 namespace StudentLoanseBonderAPI.Services
 {
     public class BondingFormService
     {
-        private readonly List<BondingFormDTO> _bondingForms = new List<BondingFormDTO>();
+        private readonly ILogger<StudentService> _logger;
+        private readonly ApplicationDbContext _dbContext;
+        private readonly IMapper _mapper;
 
-        public async Task<BondingFormDTO> GetBondingFormAsync(string id)
+        public BondingFormService(ILogger<StudentService> logger, ApplicationDbContext dbContext, IMapper mapper)
         {
-            var form = _bondingForms.Find(b => b.FormId == id);
-            return await Task.FromResult(form);
+            _logger = logger;
+            _dbContext = dbContext;
+            _mapper = mapper;
         }
 
-        public async Task<BondingFormDTO> CreateBondingFormAsync(BondingFormDTO bondingFormDTO)
+        public async Task<BondingFormReadDTO?> FindOne(string formId)
         {
-            _bondingForms.Add(bondingFormDTO);
-            return await Task.FromResult(bondingFormDTO);
-        }
+		    var form = await _dbContext.BondingForms.FirstOrDefaultAsync(x => x.Id == formId);
 
-        public async Task<BondingFormDTO> UpdateBondingFormAsync(string id, BondingFormDTO bondingFormDTO)
-        {
-            var form = _bondingForms.Find(b => b.FormId == id);
-            if (form != null)
+            if (form == null)
             {
-                form.StudentName = bondingFormDTO.StudentName;
-                form.TotalLoanAmount = bondingFormDTO.TotalLoanAmount;
-                form.Documents = bondingFormDTO.Documents;
-                form.MissingDocuments = bondingFormDTO.MissingDocuments;
+                return null;
             }
-            return await Task.FromResult(form);
+
+		    return _mapper.Map<BondingFormReadDTO>(form);
+        }
+
+        public async Task<bool> Create(BondingFormCreateDTO bondingFormCreateDTO)
+        {
+            var form = _mapper.Map<BondingForm>(bondingFormCreateDTO);
+            _dbContext.BondingForms.Add(form);
+		    await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> Update(string formId, BondingFormUpdateDTO bondingFormUpdateDTO)
+        {
+		    var form = await _dbContext.BondingForms.FirstOrDefaultAsync(x => x.Id == formId);
+
+            if(form == null)
+            {
+                return false;
+            }
+
+            form = _mapper.Map(bondingFormUpdateDTO, form);
+            
+		    await _dbContext.SaveChangesAsync();
+            
+            return true;
         }
     }
 }
