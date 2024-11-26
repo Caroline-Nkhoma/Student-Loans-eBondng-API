@@ -25,7 +25,7 @@ public class AccountController : ControllerBase
 		if (result.Succeeded)
 		{
 			_logger.LogInformation($"{userCredentials.Email}, has registered an account");
-
+			
 			var user = await _accountService.FindOneByEmail(userCredentials.Email);
 			var roleName = "User";
 			var addToUserRoleResult = await _accountService.AssignRole(user, roleName);
@@ -62,6 +62,31 @@ public class AccountController : ControllerBase
 		{
 			_logger.LogInformation($"Attempt to log into {userCredentials.Email} failed");
 			return BadRequest("Incorrect login");
+		}
+	}
+
+	[HttpPost("{accountId}/assign-role")]
+	public async Task<ActionResult> AssignRole(string accountId, [FromBody] string role)
+	{
+		var user = await _accountService.FindOneById(accountId);
+
+		if (user == null)
+		{
+			_logger.LogInformation($"Could not find account with id {accountId}");
+			return NotFound();
+		}
+
+		var result = await _accountService.AssignRole(user, role);
+
+		if (result.Succeeded)
+		{
+			_logger.LogInformation($"Successfully assigned account with id {accountId} to User role");
+			return NoContent();
+		}
+		else
+		{
+			_logger.LogError($"Failed to assigned account with id {accountId} to User role");
+			return BadRequest(result.Errors);
 		}
 	}
 }
