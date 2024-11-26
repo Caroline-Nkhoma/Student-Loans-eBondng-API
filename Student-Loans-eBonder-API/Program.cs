@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using StudentLoanseBonderAPI.APIBehavior;
+using StudentLoanseBonderAPI.Filters;
 using StudentLoanseBonderAPI.Services;
 using Supabase;
 using System.Text;
@@ -44,7 +46,10 @@ public class Program
 		builder.Services.AddScoped<BondingPeriodService>();
 		builder.Services.AddScoped<BondingStatusService>();
 
-		builder.Services.AddControllers();
+		builder.Services.AddControllers(options =>
+		{
+			options.Filters.Add(typeof(ParseBadRequest));
+		}).ConfigureApiBehaviorOptions(BadRequestsBehavior.Parse);
 
 		builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 		{
