@@ -17,7 +17,6 @@ public class AccountController : ControllerBase
 		_accountService = accountService;
 	}
 
-
 	[HttpPost("register")]
 	public async Task<ActionResult<AuthenticationResponse>> Register([FromBody] UserCredentials userCredentials)
 	{
@@ -27,15 +26,17 @@ public class AccountController : ControllerBase
 		{
 			_logger.LogInformation($"{userCredentials.Email}, has registered an account");
 
-			var addToUserRoleResult = await _accountService.AssignRole(email: userCredentials.Email, roleName: "User");
+			var user = await _accountService.FindOneByEmail(userCredentials.Email);
+			var roleName = "User";
+			var addToUserRoleResult = await _accountService.AssignRole(user, roleName);
 
 			if (addToUserRoleResult.Succeeded)
 			{
-				_logger.LogInformation($"Successfully added account with email {userCredentials.Email} to User role");
+				_logger.LogInformation($"Successfully added account with email {userCredentials.Email} to {roleName} role");
 			}
 			else
 			{
-				_logger.LogError($"Failed to add account with email {userCredentials.Email} to User role");
+				_logger.LogError($"Failed to add account with email {userCredentials.Email} to {roleName} role");
 			}
 
 			return await _accountService.BuildToken(userCredentials);

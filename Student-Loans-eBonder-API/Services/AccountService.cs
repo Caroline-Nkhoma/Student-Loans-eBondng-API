@@ -24,7 +24,7 @@ public class AccountService
 		_dbContext = dbContext;
 	}
 
-	public async Task<IdentityUser?> FindOne(string email)
+	public async Task<IdentityUser?> FindOneByEmail(string email)
 	{
 		_logger.LogInformation($"Finding account with email {email}");
 		var user = await _userManager.FindByEmailAsync(email);
@@ -32,17 +32,17 @@ public class AccountService
 		return user;
 	}
 
-	public async Task<IdentityResult> AssignRole(string email, string roleName)
+	public async Task<IdentityUser?> FindOneById(string accountId)
 	{
-		var user = await FindOne(email);
+		_logger.LogInformation($"Finding account with id {accountId}");
+		var user = await _userManager.FindByIdAsync(accountId);
 
-		if (user == null)
-		{
-			_logger.LogInformation($"Could not find account with email {email}");
-			return IdentityResult.Failed([new IdentityError { Description = $"User {email} does not exist" }]);
-		}
+		return user;
+	}
 
-		_logger.LogInformation($"Attempt to add account with email {email} to {roleName} role");
+	public async Task<IdentityResult> AssignRole(IdentityUser user, string roleName)
+	{
+		_logger.LogInformation($"Attempt to add account with id {user.Id} to {roleName} role");
 		var result = await _userManager.AddToRoleAsync(user, roleName);
 		return result;
 	}
@@ -83,7 +83,7 @@ public class AccountService
 
 		var token = new JwtSecurityToken(issuer: null, audience: null, claims: claims, expires: expiration, signingCredentials: creds);
 
-		var user = await FindOne(userCredentials.Email);
+		var user = await FindOneByEmail(userCredentials.Email);
 
 		return new AuthenticationResponse
 		{
