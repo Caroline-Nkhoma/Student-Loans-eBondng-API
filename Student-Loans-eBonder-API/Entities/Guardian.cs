@@ -13,7 +13,7 @@ public class Guardian
 	public int Id { get; set; }
 	public string FirstName {get; set;} = string.Empty;
 	public string Surname {get; set;} = string.Empty;
-	public ICollection<string> OtherNames {get; set;} = [];
+	public List<string> OtherNames {get; set;} = [];
 	public string PostalAddress {get; set;} = string.Empty;
 	public string PhysicalAddress {get; set;} = string.Empty;
 	public string HomeVillage {get; set;} = string.Empty;

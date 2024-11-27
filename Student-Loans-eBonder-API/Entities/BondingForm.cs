@@ -86,5 +86,5 @@ public class BondingForm
 	[Range(minimum: 0, maximum: (double)decimal.MaxValue)]
 	public decimal UpkeepLoanAmount { get; set; } = 0;
 	[Required]
-	public ICollection<Comment> Comments { get; set; } = [];
+	public List<Comment> Comments { get; set; } = [];
 }

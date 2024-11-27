@@ -14,10 +14,8 @@ namespace StudentLoanseBonderAPI.Services
 			if (form == null) {
 				return [];
 			}
-
-			var comments = form.Comments.ToList();
 			
-			return mapper.Map<List<CommentReadDTO>>(comments);
+			return mapper.Map<List<CommentReadDTO>>(form.Comments);
 		}
 
 		public async Task<bool> Create(string formId, CommentCreateDTO commentCreateDTO)
