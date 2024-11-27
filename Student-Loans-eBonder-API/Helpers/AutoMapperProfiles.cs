@@ -18,5 +18,6 @@ public class AutoMapperProfiles : Profile
 		
 		CreateMap<BondingForm, BondingFormReadDTO>();
 		CreateMap<BondingFormCreateDTO, BondingForm>();
+		CreateMap<Notification, NotificationDTO>();
 	}
 }
