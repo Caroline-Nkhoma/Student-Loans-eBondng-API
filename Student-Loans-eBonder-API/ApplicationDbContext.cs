@@ -19,4 +19,5 @@ public class ApplicationDbContext : IdentityDbContext
 	public DbSet<Student> Students { get; set; }
 	public DbSet<User> AccountUsers { get; set; }
 	public DbSet<BondingPeriod> BondingPeriods { get; set; }
+	public DbSet<BondingForm> BondingForms { get; set; }
 }

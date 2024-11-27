@@ -15,5 +15,8 @@ public class AutoMapperProfiles : Profile
 		CreateMap<User, UserReadDTO>();
 		CreateMap<UserCreateDTO, User>().ForMember(x => x.Signature, options => options.Ignore()).ForMember(x => x.ProfilePicture, options => options.Ignore());
 		CreateMap<UserUpdateDTO, User>().ForAllMembers(options => options.Ignore());
+		
+		CreateMap<BondingForm, BondingFormReadDTO>();
+		CreateMap<BondingFormCreateDTO, BondingForm>();
 	}
 }
