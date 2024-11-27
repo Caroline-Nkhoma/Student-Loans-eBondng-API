@@ -14,42 +14,43 @@ public class BondingFormController : ControllerBase
     public BondingFormController(BondingFormService bondingFormService)
     {
         _bondingFormService = bondingFormService;
-    }
+	}
 
-    // GET: api/BondingForm/{id}
-    [HttpGet("{id}")]
+	[HttpGet]
+	public async Task<ActionResult<List<BondingFormReadDTO>>> GetBondingForms()
+	{
+		var bondingForms = await _bondingFormService.FindAll();
+
+		return bondingForms;
+	}
+
+	[HttpGet("{id}")]
     public async Task<ActionResult<BondingFormReadDTO>> GetBondingForm(string id)
     {
         var bondingForm = await _bondingFormService.FindOne(id);
 
-        if (bondingForm == null)
+        if (bondingForm != null)
+        {
+            return bondingForm;
+        }
+        else
         {
             return NotFound();
         }
-
-        return bondingForm;
     }
 
-    // POST: api/BondingForm
     [HttpPost]
-    public async Task<ActionResult> PostBondingForm(BondingFormCreateDTO bondingFormCreateDTO)
+    public async Task<ActionResult> PostBondingForm([FromForm] BondingFormCreateDTO bondingFormCreateDTO)
     {
-        var createdForm = await _bondingFormService.Create(bondingFormCreateDTO);
+        var created = await _bondingFormService.Create(bondingFormCreateDTO);
 
-        return Created();
-    }
-
-    // PUT: api/BondingForm/{id}
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutBondingForm(string id, BondingFormUpdateDTO bondingFormUpdateDTO)
-    {
-        var updatedForm = await _bondingFormService.Update(id, bondingFormUpdateDTO);
-
-        if (updatedForm == null)
+        if (created)
         {
-            return NotFound();
+            return Created();
         }
-
-        return NoContent();
+        else
+        {
+            return BadRequest();
+        }
     }
 }

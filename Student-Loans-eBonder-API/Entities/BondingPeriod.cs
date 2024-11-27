@@ -10,7 +10,7 @@ public class BondingPeriod
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 	[Range(1, int.MaxValue)]
 	[Column("bonding_period_id")]
-	public string Id { get; set; }
+	public int Id { get; set; }
     [Required]
     public DateOnly StartDate { get; set; }
     [Required]

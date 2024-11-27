@@ -18,7 +18,7 @@ public class User
 	public IdentityUser Account {get; set;}
 	public string FirstName {get; set;} = string.Empty;
 	public string Surname {get; set;} = string.Empty;
-	public List<string> OtherNames {get; set;} = [];
+	public ICollection<string> OtherNames {get; set;} = [];
 	public string? Signature { get; set; }
 	public string? ProfilePicture { get; set; }
 }

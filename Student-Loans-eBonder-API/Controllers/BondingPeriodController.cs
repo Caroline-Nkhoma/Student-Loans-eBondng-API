@@ -1,11 +1,13 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using StudentLoanseBonderAPI.DTOs;
+using StudentLoanseBonderAPI.Entities;
 using StudentLoanseBonderAPI.Services;
 
 namespace StudentLoanseBonderAPI.Controllers
 {
     [ApiController]
-    [Route("/api/bonding period")]
+    [Route("api/institutions/{institutionId}/bonding-periods")]
     public class BondingPeriodController : ControllerBase
     {
         private readonly BondingPeriodService _bondingPeriodService;
@@ -13,20 +15,51 @@ namespace StudentLoanseBonderAPI.Controllers
         public BondingPeriodController(BondingPeriodService bondingPeriodService)
         {
             _bondingPeriodService = bondingPeriodService;
-        }
+		}
 
-        [HttpPost]
-        public IActionResult SetBondingPeriod([FromBody] BondingPeriodDto bondingPeriodDto)
-        {
-            _bondingPeriodService.SetBondingPeriod(bondingPeriodDto);
-            return Ok(new { message = "Bonding period set successfully" });
-        }
+		[HttpGet]
+		public async Task<ActionResult<BondingPeriodReadDTO>> GetBondingPeriod([FromRoute] string institutionId)
+		{
+			var bondingPeriod = await _bondingPeriodService.FindOneByInstitutionId(institutionId);
 
-        [HttpGet]
-        public ActionResult<BondingPeriodDto> GetBondingPeriod()
+			if (bondingPeriod != null)
+			{
+				return bondingPeriod;
+			}
+			else
+			{
+				return NotFound();
+			}
+		}
+
+		[HttpPost]
+        public async Task<ActionResult> SetBondingPeriod([FromRoute] string institutionId, [FromBody] BondingPeriodCreateDTO bondingPeriodCreateDTO)
         {
-            var bondingPeriod = _bondingPeriodService.GetBondingPeriod();
-            return Ok(bondingPeriod);
-        }
-    }
+            var created = await _bondingPeriodService.Create(institutionId, bondingPeriodCreateDTO);
+
+			if (created)
+			{
+				return Created();
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
+
+		[HttpDelete]
+		public async Task<ActionResult> DeleteBondingPeriod([FromRoute] string institutionId)
+		{
+			var deleted = await _bondingPeriodService.Delete(institutionId);
+
+			if (deleted)
+			{
+				return NoContent();
+			}
+			else
+			{
+				return NotFound();
+			}
+		}
+	}
 }

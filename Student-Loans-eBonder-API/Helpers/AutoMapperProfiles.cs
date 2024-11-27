@@ -17,7 +17,14 @@ public class AutoMapperProfiles : Profile
 		CreateMap<UserUpdateDTO, User>().ForAllMembers(options => options.Ignore());
 		
 		CreateMap<BondingForm, BondingFormReadDTO>();
-		CreateMap<BondingFormCreateDTO, BondingForm>();
+		CreateMap<BondingFormCreateDTO, BondingForm>().ForMember(x => x.StudentNationalIdScan, options => options.Ignore()).ForMember(x => x.StudentStudentIdScan, options => options.Ignore()).ForMember(x => x.StudentSignature, options => options.Ignore()).ForMember(x => x.InstitutionAdminSignature, options => options.Ignore()).ForMember(x => x.LoansBoardOfficialSignature, options => options.Ignore());
+
+		CreateMap<BondingPeriod, BondingPeriodReadDTO>();
+		CreateMap<BondingPeriodCreateDTO, BondingPeriod>();
+
+		CreateMap<Institution, InstitutionReadDTO>();
+		CreateMap<InstitutionCreateDTO, Institution>();
+		CreateMap<InstitutionUpdateDTO, Institution>();
 		CreateMap<Notification, NotificationDTO>();
 	}
 }

@@ -22,7 +22,7 @@ public class Student
 	public string HomeVillage {get; set;} = string.Empty;
 	public string TraditionalAuthority {get; set;} = string.Empty;
 	public string District {get; set;} = string.Empty;
-	[Length(minimumLength: 6, maximumLength: 16)]
+	[Phone]
 	public string? PhoneNumber {get; set;}
 	public string? NationalIdNumber {get; set;}
 	public string BankName {get; set;} = string.Empty;
@@ -30,8 +30,9 @@ public class Student
 	public string BankAccountName {get; set;} = string.Empty;
 	public string? BankAccountNumber {get; set;}
 	public int GuardianId {get; set;}
-	public Guardian Guardian {get; set;}
-	public string InstitutionName {get; set;} = string.Empty;
+	public Guardian Guardian {get; set; }
+	public string InstitutionId { get; set; }
+	public Institution Institution { get; set;}
 	public string ProgrammeOfStudy {get; set;} = string.Empty;
 	public string? RegistrationNumber {get; set;}
 	public string AcademicYear {get; set;} = string.Empty;
