@@ -14,14 +14,16 @@ public class AccountService
 	private readonly SignInManager<IdentityUser> _signInManager;
 	private readonly IConfiguration _configuration;
 	private readonly ApplicationDbContext _dbContext;
+	private readonly IEmailService _emailService;
 
-	public AccountService(ILogger<AccountService> logger, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IConfiguration configuration, ApplicationDbContext dbContext)
+	public AccountService(ILogger<AccountService> logger, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IConfiguration configuration, ApplicationDbContext dbContext, IEmailService emailService)
 	{
 		_logger = logger;
 		_userManager = userManager;
 		_signInManager = signInManager;
 		_configuration = configuration;
 		_dbContext = dbContext;
+		_emailService = emailService;
 	}
 
 	public async Task<IdentityUser?> FindOneByEmail(string email)
@@ -54,7 +56,7 @@ public class AccountService
 		return [.. roles];
 	}
 
-	public async Task<IdentityResult> Register(UserCredentials userCredentials)
+	public async Task<IdentityResult> Register(UserCredentials userCredentials, Func<UserCredentials, Task<bool>> sendEmail)
 	{
 		_logger.LogInformation($"Attempt to register {userCredentials.Email}");
 
@@ -64,8 +66,89 @@ public class AccountService
 			Email = userCredentials.Email,
 		};
 
+		var sentEmail = await sendEmail(userCredentials);
+
+        if (sentEmail)
+        {
 		var result = await _userManager.CreateAsync(user, userCredentials.Password);
 		return result;
+	}
+		else
+		{
+			return IdentityResult.Failed(new IdentityError() { Description = "Failed to send email to given address. Ensure email address is valid." });
+		}
+	}
+
+	public async Task<IdentityResult> RegisterStudent(UserCredentials userCredentials)
+	{
+		Func<UserCredentials, Task<bool>> sendEmail = async (_) => await _emailService.SendEmailAsync(
+			recipients: userCredentials.Email,
+			subject: "Welcome to Students Loans eBonder",
+			body: """
+			<h1>Welcome to Students Loans eBonder!</h1>
+			<p>You have successfully registered as <b><a href="mailto:someone@example.com">someone@example.com</a></b>.</p>
+			<p>You are now a user with a <b>Student</b> role.</p>
+			<p><b>Thank you for signing up!</b></p>
+			<hr />
+			<p><b>Students Loans eBonder System.</b></p>
+			<p>Please note that this email does not expect any reply and will not respond when replied to.</p>
+			""");
+
+		return await Register(userCredentials, sendEmail);
+	}
+
+	public async Task<IdentityResult> RegisterLoansBoardOfficial(UserCredentials userCredentials)
+	{
+		Func<UserCredentials, Task<bool>> sendEmail = async (_) => await _emailService.SendEmailAsync(
+			recipients: userCredentials.Email,
+			subject: "Welcome to Students Loans eBonder",
+			body: """
+			<h1>Welcome to Students Loans eBonder!</h1>
+			<p>You have successfully registered as <b><a href="mailto:someone@example.com">someone@example.com</a></b>.</p>
+			<p>You are now a user with a <b>Loans Board Official</b> role.</p>
+			<p><b>Thank you for signing up!</b></p>
+			<hr />
+			<p><b>Students Loans eBonder System.</b></p>
+			<p>Please note that this email does not expect any reply and will not respond when replied to.</p>
+			""");
+
+		return await Register(userCredentials, sendEmail);
+	}
+
+	public async Task<IdentityResult> RegisterInstitutionAdmin(UserCredentials userCredentials)
+	{
+		Func<UserCredentials, Task<bool>> sendEmail = async (_) => await _emailService.SendEmailAsync(
+			recipients: userCredentials.Email,
+			subject: "Welcome to Students Loans eBonder",
+			body: """
+			<h1>Welcome to Students Loans eBonder!</h1>
+			<p>You have successfully registered as <b><a href="mailto:someone@example.com">someone@example.com</a></b>.</p>
+			<p>You are now a user with an <b>Institution Administrator</b> role.</p>
+			<p><b>Thank you for signing up!</b></p>
+			<hr />
+			<p><b>Students Loans eBonder System.</b></p>
+			<p>Please note that this email does not expect any reply and will not respond when replied to.</p>
+			""");
+
+		return await Register(userCredentials, sendEmail);
+	}
+
+	public async Task<IdentityResult> RegisterSystemAdmin(UserCredentials userCredentials)
+	{
+		Func<UserCredentials, Task<bool>> sendEmail = async (_) => await _emailService.SendEmailAsync(
+			recipients: userCredentials.Email,
+			subject: "Welcome to Students Loans eBonder",
+			body: """
+			<h1>Welcome to Students Loans eBonder!</h1>
+			<p>You have successfully registered as <b><a href="mailto:someone@example.com">someone@example.com</a></b>.</p>
+			<p>You are now a user with a <b>System Administrator</b> role.</p>
+			<p><b>Thank you for signing up!</b></p>
+			<hr />
+			<p><b>Students Loans eBonder System.</b></p>
+			<p>Please note that this email does not expect any reply and will not respond when replied to.</p>
+			""");
+
+		return await Register(userCredentials, sendEmail);
 	}
 
 	public async Task<SignInResult> Login(UserCredentials userCredentials)
