@@ -64,24 +64,6 @@ public class NotificationService
         return true;
     }
 
-// Update an existing notification
-    public async Task<bool> UpdateNotificationAsync(int id, NotificationUpdateDTO dto)
-    {
-        var notification = await _dbContext.Notifications.FirstOrDefaultAsync(n => n.Id == id);
-
-        if (notification == null) return false;
-
-        // Update fields
-        notification.Title = dto.Title;
-        notification.Description = dto.Description;
-        notification.IsRead = dto.IsRead;
-
-        _dbContext.Notifications.Update(notification);
-        await _dbContext.SaveChangesAsync();
-
-        return true;
-    }
-
     // Delete a notification
     public async Task<bool> DeleteNotificationAsync(int id)
     {

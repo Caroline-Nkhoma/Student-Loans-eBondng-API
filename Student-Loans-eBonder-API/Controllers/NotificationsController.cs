@@ -72,25 +72,6 @@ public class NotificationController : ControllerBase
     }
 
     /// <summary>
-    /// Update an existing notification
-    /// </summary>
-    /// <param name="id">Notification ID</param>
-    /// <param name="dto">UpdateNotificationDTO object</param>
-    /// <returns>No content if successful</returns>
-    [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateNotification(int id, [FromBody] NotificationUpdateDTO dto)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState); // Return 400 if validation fails
-
-        var success = await _notificationService.UpdateNotificationAsync(id, dto);
-        if (!success)
-            return NotFound(); // Return 404 if the notification does not exist
-
-        return NoContent(); // Return 204 for a successful update
-    }
-
-    /// <summary>
     /// Delete a notification
     /// </summary>
     /// <param name="id">Notification ID</param>
