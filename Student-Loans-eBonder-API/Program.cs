@@ -7,6 +7,8 @@ using StudentLoanseBonderAPI.APIBehavior;
 using StudentLoanseBonderAPI.Filters;
 using StudentLoanseBonderAPI.Services;
 using Supabase;
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 
 
@@ -18,13 +20,14 @@ public class Program
 	{
 		var builder = WebApplication.CreateBuilder(args);
 
+		var configuration = builder.Configuration;
 		// Add services to the container.
 
 		builder.Services.AddAutoMapper(typeof(Program));
 		builder.Services.AddScoped<Supabase.Client>(_ =>
 			new Supabase.Client(
-				supabaseUrl: builder.Configuration.GetValue<string>("SupabaseURL"),
-				supabaseKey: builder.Configuration.GetValue<string>("SupabaseKey"),
+				supabaseUrl: configuration.GetValue<string>("SupabaseURL"),
+				supabaseKey: configuration.GetValue<string>("SupabaseKey"),
 				new SupabaseOptions
 				{
 					AutoConnectRealtime = true,
@@ -32,8 +35,15 @@ public class Program
 				}
 			)
 		);
+		builder.Services.AddScoped<SmtpClient>(_ => new SmtpClient(configuration.GetValue<string>("EmailService:Host"), configuration.GetValue<int>("EmailService:Port"))
+		{
+			EnableSsl = true,
+			UseDefaultCredentials = false,
+			Credentials = new NetworkCredential(configuration.GetValue<string>("EmailService:SenderEmailAddress"), configuration.GetValue<string>("EmailService:SenderEmailPassword")),
+		});
 
 		builder.Services.AddScoped<IFileStorageService, SupabaseStorageService>();
+		builder.Services.AddScoped<IEmailService, SMTPServerEmailService>();
 
 		builder.Services.AddHttpContextAccessor();
 
@@ -59,7 +69,7 @@ public class Program
 				ValidateAudience = false,
 				ValidateLifetime = true,
 				ValidateIssuerSigningKey = true,
-				IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTKey"])),
+				IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWTKey"])),
 				ClockSkew = TimeSpan.Zero,
 			};
 			options.MapInboundClaims = false;
@@ -79,11 +89,11 @@ public class Program
 			options.User.RequireUniqueEmail = true;
 		}).AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
-		builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("StudentLoanseBonderAPIDatabase")).UseSnakeCaseNamingConvention());
+		builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("StudentLoanseBonderAPIDatabase")).UseSnakeCaseNamingConvention());
 
 		builder.Services.AddCors(options =>
 		{
-			var frontendURL = builder.Configuration.GetValue<string>("FrontendURL")!;
+			var frontendURL = configuration.GetValue<string>("FrontendURL")!;
 			options.AddDefaultPolicy(builder =>
 			{
 				builder.WithOrigins(frontendURL).AllowAnyMethod().AllowAnyHeader().WithExposedHeaders(["total_amount_of_records"]); ;
