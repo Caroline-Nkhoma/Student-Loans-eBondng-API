@@ -25,6 +25,6 @@ public class AutoMapperProfiles : Profile
 		CreateMap<Institution, InstitutionReadDTO>();
 		CreateMap<InstitutionCreateDTO, Institution>();
 		CreateMap<InstitutionUpdateDTO, Institution>();
-		CreateMap<Notification, NotificationDTO>();
+		CreateMap<Notification, NotificationReadDTO>();
 	}
 }

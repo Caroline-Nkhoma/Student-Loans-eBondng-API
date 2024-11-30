@@ -20,12 +20,12 @@ public class NotificationService
     }
 
     // Fetch all notifications
-    public async Task<List<NotificationDTO>> FindAll()
+    public async Task<List<NotificationReadDTO>> FindAll()
     {
         var notifications = _dbContext.Notifications.ToList();
 
         // Convert entities to DTOs
-        return notifications.Select(n => new NotificationDTO
+        return notifications.Select(n => new NotificationReadDTO
         {
             Id = n.Id,
             Title = n.Title,
@@ -35,7 +35,7 @@ public class NotificationService
         }).ToList();
     }
 
-    public async Task<NotificationDTO?> FindOne(int id)
+    public async Task<NotificationReadDTO?> FindOne(int id)
     {
         var notification = _dbContext.Notifications.FirstOrDefaultAsync(n => n.Id == id);
 
@@ -44,7 +44,7 @@ public class NotificationService
             return null;
         }
 
-        return _mapper.Map<NotificationDTO>(notification);
+        return _mapper.Map<NotificationReadDTO>(notification);
     }
 
     // Create a new notification
