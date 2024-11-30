@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentLoanseBonderAPI.DTOs;
 using StudentLoanseBonderAPI.Services;
@@ -5,8 +7,9 @@ using StudentLoanseBonderAPI.Services;
 namespace StudentLoanseBonderAPI.Controllers
 {
     [ApiController]
-    [Route("/api/BondingStatus")]
-    public class BondingStatusController : ControllerBase
+    [Route("api/bonding-status")]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+	public class BondingStatusController : ControllerBase
     {
         private readonly BondingStatusService _bondingStatusService;
 
@@ -16,7 +19,7 @@ namespace StudentLoanseBonderAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<BondingStatusDto> GetBondingStatus()
+		public ActionResult<BondingStatusDto> GetBondingStatus()
         {
             var status = _bondingStatusService.GetBondingStatus();
             return Ok(status);
