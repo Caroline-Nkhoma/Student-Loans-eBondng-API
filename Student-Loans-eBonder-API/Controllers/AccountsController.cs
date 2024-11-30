@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StudentLoanseBonderAPI.DTOs;
 using StudentLoanseBonderAPI.Services;
@@ -67,6 +69,7 @@ public class AccountController : ControllerBase
 	}
 
 	[HttpGet("register/loans-board-officials")]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "LoansBoardOfficial,SystemAdmin")]
 	private async Task<ActionResult<AuthenticationResponse>> RegisterLoansBoardOfficial([FromBody] UserCredentials userCredentials)
 	{
 		Func<UserCredentials, Task<IdentityResult>> registerUser = async (_) => await _accountService.RegisterLoansBoardOfficial(userCredentials);
@@ -75,6 +78,7 @@ public class AccountController : ControllerBase
 	}
 
 	[HttpGet("register/institution-admins")]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "InstitutionAdmin,LoansBoardOfficial,SystemAdmin")]
 	private async Task<ActionResult<AuthenticationResponse>> RegisterInstitutionAdmin([FromBody] UserCredentials userCredentials)
 	{
 		Func<UserCredentials, Task<IdentityResult>> registerUser = async (_) => await _accountService.RegisterInstitutionAdmin(userCredentials);
@@ -83,6 +87,7 @@ public class AccountController : ControllerBase
 	}
 
 	[HttpGet("register/system-admins")]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SystemAdmin")]
 	private async Task<ActionResult<AuthenticationResponse>> RegisterSystemAdmin([FromBody] UserCredentials userCredentials)
 	{
 		Func<UserCredentials, Task<IdentityResult>> registerUser = async (_) => await _accountService.RegisterSystemAdmin(userCredentials);
@@ -108,6 +113,7 @@ public class AccountController : ControllerBase
 	}
 
 	[HttpPost("{accountId}/roles")]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SystemAdmin")]
 	public async Task<ActionResult> AssignRole(string accountId, [FromBody] string role)
 	{
 		var user = await _accountService.FindOneById(accountId);
@@ -133,6 +139,7 @@ public class AccountController : ControllerBase
 	}
 
 	[HttpGet("{accountId}/roles")]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 	public async Task<ActionResult<List<string>>> GetRoles(string accountId)
 	{
 		var user = await _accountService.FindOneById(accountId);
