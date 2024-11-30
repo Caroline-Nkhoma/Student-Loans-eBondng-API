@@ -68,6 +68,13 @@ public class AccountService
 		}
 	}
 
+	public async Task<IdentityResult> RemoveRole(IdentityUser user, string roleName)
+	{
+		_logger.LogInformation($"Attempting to remove account with id {user.Id} from {roleName} role");
+		var result = await _userManager.RemoveFromRoleAsync(user, roleName);
+		return result;
+	}
+
 	public async Task<IdentityResult> Register(UserCredentials userCredentials, Func<UserCredentials, Task<bool>> sendEmail)
 	{
 		_logger.LogInformation($"Attempt to register {userCredentials.Email}");
@@ -82,9 +89,9 @@ public class AccountService
 
         if (sentEmail)
         {
-		var result = await _userManager.CreateAsync(user, userCredentials.Password);
-		return result;
-	}
+			var result = await _userManager.CreateAsync(user, userCredentials.Password);
+			return result;
+        }
 		else
 		{
 			return IdentityResult.Failed(new IdentityError() { Description = "Failed to send email to given address. Ensure email address is valid." });
