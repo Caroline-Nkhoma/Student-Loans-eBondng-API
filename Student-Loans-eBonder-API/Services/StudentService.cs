@@ -52,6 +52,7 @@ public class StudentService
 
 			student.AccountId = accountId;
 
+
 			if (studentCreateDTO.NationalIdScan != null)
 			{
 				_logger.LogInformation("Saving uploaded national id scan");
