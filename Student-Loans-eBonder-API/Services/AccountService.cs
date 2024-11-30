@@ -49,11 +49,23 @@ public class AccountService
 		return result;
 	}
 
-	public async Task<List<string>> GetRoles(IdentityUser user)
+	public async Task<List<string>> GetRoles(IdentityUser calledOnUser)
 	{
-		_logger.LogInformation($"Fetching all the roles that the account with id {user.Id} belongs to");
-		var roles = await _userManager.GetRolesAsync(user);
+		_logger.LogInformation($"Fetching all the roles that the account with id {calledOnUser.Id} belongs to");
+		var roles = await _userManager.GetRolesAsync(calledOnUser);
 		return [.. roles];
+	}
+
+	public async Task<List<string>?> GetProtectedRoles(IdentityUser calledOnUser, IdentityUser callingUser)
+	{
+		if ((calledOnUser.Id == callingUser.Id) || (await _userManager.IsInRoleAsync(callingUser, "SystemAdmin")))
+		{
+			return await GetRoles(calledOnUser);
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	public async Task<IdentityResult> Register(UserCredentials userCredentials, Func<UserCredentials, Task<bool>> sendEmail)
