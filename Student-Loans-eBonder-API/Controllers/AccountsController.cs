@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using StudentLoanseBonderAPI.DTOs;
 using StudentLoanseBonderAPI.Services;
 
@@ -17,26 +18,35 @@ public class AccountController : ControllerBase
 		_accountService = accountService;
 	}
 
-	[HttpPost("register")]
-	public async Task<ActionResult<AuthenticationResponse>> Register([FromBody] UserCredentials userCredentials)
+	private async Task<ActionResult<AuthenticationResponse>> Register(UserCredentials userCredentials, Func<UserCredentials, Task<IdentityResult>> registerUser, string roleToAdd)
 	{
-		var result = await _accountService.Register(userCredentials);
+		var result = await registerUser(userCredentials);
 
 		if (result.Succeeded)
 		{
 			_logger.LogInformation($"{userCredentials.Email}, has registered an account");
 			
 			var user = await _accountService.FindOneByEmail(userCredentials.Email);
-			var roleName = "User";
-			var addToUserRoleResult = await _accountService.AssignRole(user, roleName);
+			var addToUserRoleResult = await _accountService.AssignRole(user, "User");
 
 			if (addToUserRoleResult.Succeeded)
 			{
-				_logger.LogInformation($"Successfully added account with email {userCredentials.Email} to {roleName} role");
+				_logger.LogInformation($"Successfully added account with email {userCredentials.Email} to User role");
 			}
 			else
 			{
-				_logger.LogError($"Failed to add account with email {userCredentials.Email} to {roleName} role");
+				_logger.LogError($"Failed to add account with email {userCredentials.Email} to User role");
+			}
+
+			var addToRoleResult = await _accountService.AssignRole(user, roleToAdd);
+
+			if (addToUserRoleResult.Succeeded)
+			{
+				_logger.LogInformation($"Successfully added account with email {userCredentials.Email} to {roleToAdd} role");
+			}
+			else
+			{
+				_logger.LogError($"Failed to add account with email {userCredentials.Email} to {roleToAdd} role");
 			}
 
 			return await _accountService.BuildToken(userCredentials);
@@ -46,6 +56,38 @@ public class AccountController : ControllerBase
 			_logger.LogInformation($"Attempt to register {userCredentials.Email} failed");
 			return BadRequest(result.Errors);
 		}
+	}
+
+	[HttpGet("register/students")]
+	private async Task<ActionResult<AuthenticationResponse>> RegisterStudent([FromBody] UserCredentials userCredentials)
+	{
+		Func<UserCredentials, Task<IdentityResult>> registerUser = async (_) => await _accountService.RegisterStudent(userCredentials);
+
+		return await Register(userCredentials, registerUser, "Student");
+	}
+
+	[HttpGet("register/loans-board-officials")]
+	private async Task<ActionResult<AuthenticationResponse>> RegisterLoansBoardOfficial([FromBody] UserCredentials userCredentials)
+	{
+		Func<UserCredentials, Task<IdentityResult>> registerUser = async (_) => await _accountService.RegisterLoansBoardOfficial(userCredentials);
+
+		return await Register(userCredentials, registerUser, "LoansBoardOfficial");
+	}
+
+	[HttpGet("register/institution-admins")]
+	private async Task<ActionResult<AuthenticationResponse>> RegisterInstitutionAdmin([FromBody] UserCredentials userCredentials)
+	{
+		Func<UserCredentials, Task<IdentityResult>> registerUser = async (_) => await _accountService.RegisterInstitutionAdmin(userCredentials);
+
+		return await Register(userCredentials, registerUser, "InstitutionAdmin");
+	}
+
+	[HttpGet("register/system-admins")]
+	private async Task<ActionResult<AuthenticationResponse>> RegisterSystemAdmin([FromBody] UserCredentials userCredentials)
+	{
+		Func<UserCredentials, Task<IdentityResult>> registerUser = async (_) => await _accountService.RegisterSystemAdmin(userCredentials);
+
+		return await Register(userCredentials, registerUser, "SystemAdmin");
 	}
 
 	[HttpPost("login")]
