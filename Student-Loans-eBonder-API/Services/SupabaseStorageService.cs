@@ -37,8 +37,8 @@ public class SupabaseStorageService : IFileStorageService
 
 	public async Task<string> SaveFile(string containerName, IFormFile file)
 	{
-		var extension = Path.GetExtension(file.FileName);
-		var fileName = $"{Guid.NewGuid()}{extension}";
+		var extension = file.ContentType.Split('/')[1];
+		var fileName = $"{Guid.NewGuid()}.{extension}";
 
 		var bucket = _supabaseClient.Storage.From(containerName);
 
