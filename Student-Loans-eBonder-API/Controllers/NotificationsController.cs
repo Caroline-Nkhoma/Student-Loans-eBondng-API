@@ -3,11 +3,14 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using StudentLoanseBonderAPI.Services;
 using StudentLoanseBonderAPI.DTOs;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace StudentLoanseBonderAPI.Controllers;
 
-[ApiController]
 [Route("api/accounts/{accountId}/notifications")]
+[ApiController]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class NotificationController : ControllerBase
 {
     private readonly ILogger<NotificationController> _logger;
