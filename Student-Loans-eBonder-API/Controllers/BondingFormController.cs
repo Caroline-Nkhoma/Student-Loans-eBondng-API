@@ -1,12 +1,14 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentLoanseBonderAPI.DTOs;
 using StudentLoanseBonderAPI.Services;
-using System.Threading.Tasks;
 
 namespace StudentLoanseBonderAPI.Controllers;
 
 [Route("api/forms")]
 [ApiController]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class BondingFormController : ControllerBase
 {
     private readonly BondingFormService _bondingFormService;
@@ -40,7 +42,8 @@ public class BondingFormController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> PostBondingForm([FromForm] BondingFormCreateDTO bondingFormCreateDTO)
+	[Authorize(Roles = "Student")]
+	public async Task<ActionResult> PostBondingForm([FromForm] BondingFormCreateDTO bondingFormCreateDTO)
     {
         var created = await _bondingFormService.Create(bondingFormCreateDTO);
 
