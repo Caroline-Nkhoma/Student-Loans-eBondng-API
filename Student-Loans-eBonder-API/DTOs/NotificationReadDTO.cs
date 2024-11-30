@@ -1,5 +1,5 @@
 namespace StudentLoanseBonderAPI.DTOs;
-public class NotificationDTO
+public class NotificationReadDTO
 {
     public int Id { get; set; }
     public string Title { get; set; }
