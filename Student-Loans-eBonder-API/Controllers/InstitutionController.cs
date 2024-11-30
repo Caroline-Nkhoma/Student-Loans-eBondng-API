@@ -44,6 +44,7 @@ public class InstitutionController : ControllerBase
 	}
 
 	[HttpPost]
+	[Authorize(Roles = "LoansBoardOfficial,SystemAdmin")]
 	public async Task<ActionResult> HttpPost([FromBody] InstitutionCreateDTO institutionCreateDTO)
 	{
 		var created = await _institutionService.Create(institutionCreateDTO);
@@ -59,6 +60,7 @@ public class InstitutionController : ControllerBase
 	}
 
 	[HttpPatch("{insitutionId}")]
+	[Authorize(Roles = "InstitutionAdmin,LoansBoardOfficial,SystemAdmin")]
 	public async Task<ActionResult> Patch(string insitutionId, [FromBody] InstitutionUpdateDTO institutionUpdateDTO)
 	{
 		var updated = await _institutionService.Update(insitutionId, institutionUpdateDTO);
@@ -74,6 +76,7 @@ public class InstitutionController : ControllerBase
 	}
 
 	[HttpDelete("{insitutionId}")]
+	[Authorize(Roles = "LoansBoardOfficial,SystemAdmin")]
 	public async Task<ActionResult> Delete(string insitutionId)
 	{
 		var deleted = await _institutionService.Delete(insitutionId);
