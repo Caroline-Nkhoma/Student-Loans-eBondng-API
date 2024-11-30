@@ -142,14 +142,26 @@ public class AccountController : ControllerBase
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 	public async Task<ActionResult<List<string>>> GetRoles(string accountId)
 	{
-		var user = await _accountService.FindOneById(accountId);
+		var calledOnUser = await _accountService.FindOneById(accountId);
 
-		if (user == null)
+		if (calledOnUser == null)
 		{
 			_logger.LogInformation($"Could not find account with id {accountId}");
 			return NotFound();
 		}
 
-		return await _accountService.GetRoles(user);
+		var email = HttpContext.User.Claims.First(x => x.Type == "email").Value;
+		var callingUser = await _accountService.FindOneByEmail(email);
+
+		var roles = await _accountService.GetProtectedRoles(calledOnUser: calledOnUser, callingUser: callingUser);
+
+		if (roles != null)
+		{
+			return roles;
+		}
+		else
+		{
+			return NotFound();
+		}
 	}
 }
