@@ -29,10 +29,10 @@ public class Student
 	public string BranchName {get; set;} = string.Empty;
 	public string BankAccountName {get; set;} = string.Empty;
 	public string? BankAccountNumber {get; set;}
-	public int GuardianId {get; set;}
-	public Guardian Guardian {get; set; }
-	public string InstitutionId { get; set; }
-	public Institution Institution { get; set;}
+	public int? GuardianId {get; set;}
+	public Guardian? Guardian {get; set; }
+	public string? InstitutionId { get; set; }
+	public Institution? Institution { get; set;}
 	public string ProgrammeOfStudy {get; set;} = string.Empty;
 	public string? RegistrationNumber {get; set;}
 	public string AcademicYear {get; set;} = string.Empty;
