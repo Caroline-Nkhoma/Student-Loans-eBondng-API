@@ -21,6 +21,7 @@ public class StudentController : ControllerBase
 	}
 
 	[HttpGet]
+	[Authorize(Roles = "Student,SystemAdmin")]
 	public async Task<ActionResult<StudentReadDTO>> Get([FromRoute] string accountId)
 	{
 		var student = await _studentService.FindOne(accountId);
@@ -36,6 +37,7 @@ public class StudentController : ControllerBase
 	}
 
 	[HttpPut]
+	[Authorize(Roles = "Student")]
 	public async Task<ActionResult> Put([FromRoute] string accountId, [FromForm] StudentCreateDTO studentCreateDTO)
 	{
 		var hasBeenPut = await _studentService.CreateOrUpdate(accountId, studentCreateDTO);
@@ -51,6 +53,7 @@ public class StudentController : ControllerBase
 	}
 
 	[HttpPatch]
+	[Authorize(Roles = "Student")]
 	public async Task<ActionResult> Patch([FromRoute] string accountId, [FromForm] StudentUpdateDTO studentUpdateDTO)
 	{
 		var updated = await _studentService.Update(accountId, studentUpdateDTO);
@@ -66,6 +69,7 @@ public class StudentController : ControllerBase
 	}
 
 	[HttpDelete]
+	[Authorize(Roles = "Student,SystemAdmin")]
 	public async Task<ActionResult> Delete([FromRoute] string accountId)
 	{
 		var deleted = await _studentService.Delete(accountId);
