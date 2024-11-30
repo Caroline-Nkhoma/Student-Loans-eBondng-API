@@ -21,6 +21,7 @@ public class UserController : ControllerBase
 	}
 
 	[HttpGet]
+	[Authorize(Roles = "SystemAdmin")]
 	public async Task<ActionResult<UserReadDTO>> Get([FromRoute] string accountId)
 	{
 		var user = await _userService.FindOne(accountId);
@@ -66,6 +67,7 @@ public class UserController : ControllerBase
 	}
 
 	[HttpDelete]
+	[Authorize(Roles = "SystemAdmin")]
 	public async Task<ActionResult> Delete([FromRoute] string accountId)
 	{
 		var deleted = await _userService.Delete(accountId);
