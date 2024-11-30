@@ -2,13 +2,13 @@
 
 namespace StudentLoanseBonderAPI.Services;
 
-public class SMTPServerEmailService : IEmailService
+public class SmtpServerEmailService : IEmailService
 {
-	private readonly ILogger<SMTPServerEmailService> _logger;
+	private readonly ILogger<SmtpServerEmailService> _logger;
 	private readonly SmtpClient _smtpClient;
 	private readonly string _senderEmailAddress;
 
-	public SMTPServerEmailService(ILogger<SMTPServerEmailService> logger, SmtpClient smtpClient, IConfiguration configuration)
+	public SmtpServerEmailService(ILogger<SmtpServerEmailService> logger, SmtpClient smtpClient, IConfiguration configuration)
 	{
 		_logger = logger;
 		_smtpClient = smtpClient;

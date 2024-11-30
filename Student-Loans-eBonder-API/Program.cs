@@ -43,7 +43,7 @@ public class Program
 		});
 
 		builder.Services.AddScoped<IFileStorageService, SupabaseStorageService>();
-		builder.Services.AddScoped<IEmailService, SMTPServerEmailService>();
+		builder.Services.AddScoped<IEmailService, SmtpServerEmailService>();
 
 		builder.Services.AddHttpContextAccessor();
 
